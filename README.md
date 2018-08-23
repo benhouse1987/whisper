@@ -92,25 +92,29 @@ insert into `i18n_item`  values ( '1', 'zh_cn', 'name', '中文部门', '1', '0'
 
 
 
-Try with this simple function
+Try with this simple function in your controler
 ```
+  @RequestMapping(value = "/getOneDepartment")
     @I18nTranslate
+    @ResponseBody
     public Department getOneDepartment(){
-        Department department=new Department();
+        Department department = new Department();
         department.setDepartmentId(1L);
         department.setDepartmentName("english department name");
         department.setDescription("english description");
         department.setLevel(0);
-        
-        
         return department;
-        
-    }
-    
-    
-     public void tryDepartmentTranslation(){
-        Department department= this.getOneDepartment();
-        System.out.println("deparment name is "+department.getDepartmentName());
-        
     }
 ```
+
+
+You will now see this magic work as service api result in Chinese!
+```
+{
+    "departmentId": 1,
+    "departmentName": "中文部门",
+    "description": "english description",
+    "level": 0
+}
+```
+
