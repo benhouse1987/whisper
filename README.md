@@ -1,13 +1,15 @@
 # whisper
-Whisper is an I18n translator framework to add i18n support for our service.
+Whisper is an I18n translator framework to add i18n support for your service.
 
 It's really fast and easy to use.
 
-Now let's get a quick start!
+**Let's get a quick start!**
 
-# quick start
-## prepare
-### create an i18n table
+I will assume you have a spring based service project, and it's dataSource has been set correctly.
+
+
+## Prepare
+### Create an i18n table
 create an i18n table in the database your service based on
 
 ```
@@ -23,7 +25,8 @@ CREATE TABLE `i18n_item` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ```
-### add maven dependency import
+### Add maven dependency import
+Add whisper maven dependency to your service project.
 ```
        <dependency>
             <groupId>com.huilianyi</groupId>
@@ -32,8 +35,8 @@ CREATE TABLE `i18n_item` (
         </dependency>
 ```
 
-### init translate service for your service
-Let's try with a basic init here. You can even paste this i18n config class direct into your service.
+### Init translate service for your service
+Let's try with a basic init here. You can paste this sample i18n config class directly into your service.
 ```
 @Configuration
 @EnableResourceServer
@@ -52,16 +55,19 @@ public class I18nTranslateConfig {
 }
 ```
 
-Now you're ready to get i18n capability for your service!
+Now you're ready!
 
 
-## try it
-### demo1 translate department name in different language
-Let's assume you have a Department class like this.
-
+## Try it
+### Demo1 
+### Translate department name in different language
 Say we want to translate department's name attribute to Chinese.
 
 Simply add two I18nMapping annotation here.
+
+We build a Department class like this:
+
+
 
 ```
 
@@ -84,12 +90,14 @@ public class Department {
 
 ```
 
-Now let's do the magic!
 
 Init an Chinese translation in i18n_items tabel.
 
 insert into `i18n_item`  values ( '1', 'zh_cn', 'name', '中文部门', '1', '0', '2018-08-23 21:41:24');
 
+
+
+**Now let's do the magic!**
 
 
 Try with this simple function in your controler
@@ -108,7 +116,7 @@ Try with this simple function in your controler
 ```
 
 
-You will now see this magic work as service api result in Chinese!
+You will see this magic work as the api resulted in Chinese!
 ```
 {
     "departmentId": 1,
@@ -118,3 +126,52 @@ You will now see this magic work as service api result in Chinese!
 }
 ```
 
+### Demo2
+#### Response in an specific(say current user's)  language
+In Demo 1 we return everything in Chinese.
+
+What if we want to return response in the api caller's language?
+
+It's easy!
+
+Create a language tool class, which help us decide which language we should translate to.
+This class should implement interface TranslateToolService.
+
+```
+public class MyTranslateToolService implements TranslateToolService {
+
+
+    public String getCurrentLanguage() {
+
+        //some exist logic to get current user language
+        //for example from token or some other table
+        return getCurrentUserLanguage();
+    }
+
+
+}
+
+```
+
+We should init translatService with this new customized language tool class
+
+```
+@Configuration
+@EnableResourceServer
+public class I18nTranslateConfig {
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Bean
+    public I18nTranslateService init() {
+        ## a translator service always translate your data in  Chinese language
+        return new I18nTranslateService(applicationContext,MyTranslateToolService);
+
+    }
+
+}
+```
+
+
+Now every time before whisper translate something, it  will invoke **MyTranslateToolService.getCurrentLanguage()** to decide in witch language to translate.

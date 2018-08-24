@@ -19,8 +19,8 @@ import java.util.Set;
 
 public class JDBCTranslateItemStore implements TranslateItemStore {
 
-    private static final String GET_I18N_ITEMS_SQL = "select * from atl_i18n_item where i18n_key in (:i18nKeys) and language= :language and is_enabled=1";
-    private static final String CREATE_OR_UPDATE_I18N_ITEMS_SQL = "replace into atl_i18n_item values(:i18nKey,:language,:code,:name,:enabled,:deleted,now())";
+    private static final String GET_I18N_ITEMS_SQL = "select * from i18n_item where i18n_key in (:i18nKeys) and language= :language and is_enabled=1";
+    private static final String CREATE_OR_UPDATE_I18N_ITEMS_SQL = "replace into i18n_item values(:i18nKey,:language,:code,:name,:enabled,:deleted,now())";
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public JDBCTranslateItemStore(DataSource dataSource) {
@@ -57,7 +57,7 @@ public class JDBCTranslateItemStore implements TranslateItemStore {
         Set<String> ids=new HashSet<>(i18nKeys);
         i18nKeysParam.addValue("i18nKeys", ids);
         i18nKeysParam.addValue("language",lang);
-        List<I18nTranslateItemDTO> i18nTranslateItemDTOS=  jdbcTemplate.query(this.GET_I18N_ITEMS_SQL, i18nKeysParam, new RowMapper<I18nTranslateItemDTO>() {
+        List<I18nTranslateItemDTO> i18nTranslateItemDTOS=  jdbcTemplate.query(GET_I18N_ITEMS_SQL, i18nKeysParam, new RowMapper<I18nTranslateItemDTO>() {
 
             public I18nTranslateItemDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return I18nTranslateItemDTO.builder().i18nKey(rs.getString("i18n_key"))
