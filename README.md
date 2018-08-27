@@ -1,5 +1,5 @@
-# whisper
-Whisper is an I18n translator framework to add i18n support for your service.
+# Whisper
+Whisper is an I18n translate framework to add i18n support for your service.
 
 It's really fast and easy to use.
 
@@ -10,7 +10,9 @@ I will assume you have a spring based service project, and it's dataSource has b
 
 ## Prepare
 ### Create an i18n table
-create an i18n table in the database your service based on
+create an i18n table in the database your service based on.
+
+You can use the following script:
 
 ```
 CREATE TABLE `i18n_item` (
@@ -47,7 +49,7 @@ public class I18nTranslateConfig {
 
     @Bean
     public I18nTranslateService init() {
-        ## a translator service always translate your data in  Chinese language
+        //this basic translator service always translate your data in  Chinese language
         return new I18nTranslateService(applicationContext);
 
     }
@@ -55,17 +57,14 @@ public class I18nTranslateConfig {
 }
 ```
 
-Now you're ready!
+**Now you're ready!**
 
 
 ## Try it
-### Demo1 
+### Demo 1 
 ### Translate department name in different language
-Say we want to translate department's name attribute to Chinese.
 
-Simply add two I18nMapping annotation here.
-
-We build a Department class like this:
+First we build a Department class like this:
 
 
 
@@ -90,11 +89,16 @@ public class Department {
 
 ```
 
+Say we want to translate department's name attribute to Chinese.
+
+Simply add two I18nMapping annotation here.
+
+
 
 Init an Chinese translation in i18n_items tabel.
-
+```
 insert into `i18n_item`  values ( '1', 'zh_cn', 'name', '中文部门', '1', '0', '2018-08-23 21:41:24');
-
+```
 
 
 **Now let's do the magic!**
@@ -126,7 +130,7 @@ You will see this magic work as the api resulted in Chinese!
 }
 ```
 
-### Demo2
+### Demo 2
 #### Response in an specific(say current user's)  language
 In Demo 1 we return everything in Chinese.
 
@@ -164,8 +168,7 @@ public class I18nTranslateConfig {
     ApplicationContext applicationContext;
 
     @Bean
-    public I18nTranslateService init() {
-        ## a translator service always translate your data in  Chinese language
+    public I18nTranslateService init() {        
         return new I18nTranslateService(applicationContext,MyTranslateToolService);
 
     }
@@ -175,6 +178,68 @@ public class I18nTranslateConfig {
 
 
 Now every time before whisper translate something, it  will invoke **MyTranslateToolService.getCurrentLanguage()** to decide in witch language to translate.
+
+### Demo 3
+### An i18n Exception
+You may want to give exception message in different languages.
+
+It's easy enough using Whisper to help you to accomplish this.
+
+#### Create an exception detail dto
+Say we make the errorCode attribute as i18n id.
+
+And  we make message attribute as the part to translate.
+
+Simply add two annotations.
+
+```@Data
+   @Builder
+   public class ConfigExceptionDetail {
+       @I18nMapping(i18nCode = "message")
+       private String message;
+   
+       @I18nMapping(i18nCode = "id")
+       private String errorCode;
+   }
+```
+#### Create Controller advice
+We create a Controller advice to handle Exceptions.
+
+```
+
+@ControllerAdvice
+public class ResourceAdvice {
+    @ExceptionHandler(RuntimeException.class)
+    @I18nTranslate
+    public ResponseEntity<ExceptionDetail> handleValidationException(RuntimeException e) {
+
+        ConfigExceptionDetail detail = ConfigExceptionDetail.builder().errorCode("e001").message("cccc").build();
+
+        return new ResponseEntity(detail, ExceptionErrorCode.VALIDATION_ERROR.getHttpStatus());
+    }
+}
+
+```
+
+#### Initiate two error i18n item in i18n_item table
+
+You can do this with api we provided or just insert directly into database.
+
+
+i18n_key|language|i18n_code|18n_name
+---|---|---|---
+e001|en|message|english error message
+e001|zh_cn|message|中文报错
+
+
+
+And now, it's all done!
+
+
+
+
+
+
 
 ## Create i18n translation items
 We provide an neat api to help you to maintain i18n translate items.
