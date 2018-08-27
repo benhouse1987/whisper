@@ -3,14 +3,31 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.huilianyi</groupId>
+	<groupId>io.github.benhouse1987</groupId>
 	<artifactId>whisper</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>whisper</name>
 	<description>translate framework</description>
-
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/benhouse1987/whisper</url>
+		<connection>https://github.com/benhouse1987/whisper.git</connection>
+		<developerConnection>benhouse1987@163.com</developerConnection>
+	</scm>
+	<developers>
+		<developer>
+			<name>benhouse</name>
+			<email>benhouse1987@163.com</email>
+		</developer>
+	</developers>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -83,12 +100,12 @@
 
 	<distributionManagement>
 		<repository>
-			<id>nexus-releases</id>
-			<url>https://nexus.huilianyi.com/repository/maven-releases/</url>
+			<id>snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</repository>
 		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<url>https://nexus.huilianyi.com/repository/maven-snapshots/</url>
+			<id>snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 

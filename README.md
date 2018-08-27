@@ -28,11 +28,11 @@ CREATE TABLE `i18n_item` (
 ### Add maven dependency import
 Add whisper maven dependency to your service project.
 ```
-       <dependency>
-            <groupId>com.huilianyi</groupId>
-            <artifactId>whisper</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
+<dependency>
+    <groupId>io.github.benhouse1987</groupId>
+    <artifactId>whisper</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>>
 ```
 
 ### Init translate service for your service
@@ -175,3 +175,22 @@ public class I18nTranslateConfig {
 
 
 Now every time before whisper translate something, it  will invoke **MyTranslateToolService.getCurrentLanguage()** to decide in witch language to translate.
+
+## Create i18n translation items
+We provide an neat api to help you to maintain i18n translate items.
+
+Here's a sample code
+```
+        @Inject
+	I18nTranslateService i18nTranslateService;
+
+	public Boolean createI18nItems(){
+		List<I18nTranslateItemDTO> i18nTranslateItemDTOS = new ArrayList<>();
+		i18nTranslateItemDTOS.add(I18nTranslateItemDTO.builder().i18nKey("1").code("name").language("en").name("department english name").build());
+		return i18nTranslateService.createOrUpdateI18nItems(i18nTranslateItemDTOS);
+	}
+``` 
+
+**Important Note**
+
+We use i18nKey,i18nCode,language as an union unique key in table i18n_items.
