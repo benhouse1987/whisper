@@ -1,18 +1,17 @@
 # Whisper
-Whisper is an I18n translate framework to add i18n support for your service.
-
-It's really fast and easy to use.
-
-**Let's get a quick start!**
-
-I will assume you have a spring based service project, and it's dataSource has been set correctly.
+Whisper是一个轻量级I18n翻译框架，简单易用，性能出色，并且扩展简单。
 
 
-## Prepare
-### Create an i18n table
-create an i18n table in the database your service based on.
+**让我们看看如何开始使用Whisper!**
 
-You can use the following script:
+假设你有一个基于Spring的项目，并且项目的dataSource已经配置好。
+
+
+## 准备工作
+### 创建I18n翻译表
+在你的服务基于的数据库中，创建一张i18n表，用来存储翻译关系。
+
+如果恰好使用Mysql，你可以直接使用以下脚本创建这张表：
 
 ```
 CREATE TABLE `i18n_item` (
@@ -27,8 +26,11 @@ CREATE TABLE `i18n_item` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ```
-### Add maven dependency import
-Add whisper maven dependency to your service project.
+其余数据库的实现我们后续会很快给出，也欢迎大家贡献其他库的实现方式。
+
+### 添加Maven依赖
+将Whisper的Maven依赖加入到项目中。
+
 ```
 <dependency>
     <groupId>io.github.benhouse1987</groupId>
@@ -37,8 +39,13 @@ Add whisper maven dependency to your service project.
 </dependency>>
 ```
 
-### Init translate service for your service
-Let's try with a basic init here. You can paste this sample i18n config class directly into your service.
+### 初始化翻译Service
+这里我们使用一个最基本的初始化方式。
+
+该初始化的Service固定将所有内容翻译成中文。
+
+事实上，你可以直接将这个类复制到你的项目中。
+
 ```
 @Configuration
 @EnableResourceServer
@@ -57,15 +64,14 @@ public class I18nTranslateConfig {
 }
 ```
 
-**Now you're ready!**
+**现在，Whisper已经准备完毕！**
 
 
-## Try it
+## 尝试一下！
 ### Demo 1 
-### Translate department name in different language
+### 将部门名称翻译成中文
 
-First we build a Department class like this:
-
+首先我们写一个Department类，像这样：
 
 
 ```
@@ -89,22 +95,21 @@ public class Department {
 
 ```
 
-Say we want to translate department's name attribute to Chinese.
+假如我们希望把部门名称翻译成中文，只需要加两个`I18nMapping`注解，分别用来指定待翻译实体的id以及，要翻译的字段。
 
-Simply add two I18nMapping annotation here.
+在i18n_item表中，我们初始化一条中文翻译：
 
 
-
-Init an Chinese translation in i18n_items table.
 ```
 insert into `i18n_item`  values ( '1', 'zh_cn', 'name', '中文部门', '1', '0', '2018-08-23 21:41:24');
+insert into `i18n_item`  values ( '1', 'en', 'name', 'english department name', '1', '0', '2018-08-23 21:41:24');
 ```
 
 
-**Now let's do the magic!**
+**现在让我们看看效果!**
 
+在Controller中，添加一个示例的api,这个api中，我们返回一个名称为`english department name`的部门：
 
-Try with this simple function in your controler
 ```
 
 @Controller
@@ -126,8 +131,8 @@ public class DemoController {
 
 ```
 
+项目运行后，调用该api，你会发现Whisper把`departmentName`字段翻译成了中文！
 
-You will see this magic work as the api resulted in Chinese!
 ```
 {
     "departmentId": 1,
@@ -138,16 +143,20 @@ You will see this magic work as the api resulted in Chinese!
 ```
 
 ### Demo 2
-#### Response in an specific(say current user's)  language
-In Demo 1 we return everything in Chinese.
+#### 按指定的语言翻译（比如用户的当前语言）
+在Demo 1中，我们总是把任何东西翻译成中文。
 
-What if we want to return response in the api caller's language?
+如果我们想按照api的调用者语言，返回相应语言的翻译怎么办呢？
 
-It's easy!
 
-Create a language tool class, which help us decide which language we should translate to.
-This class should implement interface TranslateToolService.
+非常简单！
 
+
+创建一个语言翻译工具类，这个类将帮助我们决定按何种语言翻译。
+
+这个类需要实现TranslateToolService 接口。
+
+下面是个简单的示意：
 ```
 public class MyTranslateToolService implements TranslateToolService {
 
@@ -164,7 +173,10 @@ public class MyTranslateToolService implements TranslateToolService {
 
 ```
 
-We should init translatService with this new customized language tool class
+我们需要在`I18nTranslateConfig`中，使用新的构造函数初始化I18nTranslateService。
+
+该初始化指定了语言工具类为我们刚才新建的`MyTranslateToolService`。
+
 
 ```
 @Configuration
@@ -182,22 +194,24 @@ public class I18nTranslateConfig {
 
 }
 ```
+现在，Whisper将按照`MyTranslateToolService.getCurrentLanguage()`方法的返回语言进行翻译！
 
-
-Now every time before whisper translate something, it  will invoke **MyTranslateToolService.getCurrentLanguage()** to decide in witch language to translate.
 
 ### Demo 3
-### An i18n Exception
-You may want to give exception message in different languages.
+### 一个国际化异常的例子
+也许你希望将返回的错误信息也按照当前用户的语言来翻译。
 
-It's easy enough using Whisper to help you to accomplish this.
+使用Whisper框架做这件事情非常简单！
 
-#### Create an exception detail dto
-Say we make the errorCode attribute as i18n id.
 
-And  we make message attribute as the part to translate.
+#### 创建一个错误信息DTO
+假设我们将`errorCode`属性作为i18n的翻译ID。
 
-Simply add two annotations.
+我们希望将`message`属性翻译成不同语言。
+
+只需要加两个I18nMapping 的 annotation，非常简单。
+
+
 
 ```@Data
    @Builder
@@ -209,8 +223,7 @@ Simply add two annotations.
        private String errorCode;
    }
 ```
-#### Create Controller advice
-We create a Controller advice to handle Exceptions.
+#### 创建一个 ControllerAdvice来处理异常
 
 ```
 
@@ -228,9 +241,7 @@ public class ResourceAdvice {
 
 ```
 
-#### Initiate two error i18n item in i18n_item table
-
-You can do this with api we provided or just insert directly into database.
+#### 在 i18n_item 表中，初始化两条翻译项。
 
 
 
@@ -240,10 +251,9 @@ insert into `i18n_item`  values ( 'e001', 'en', 'message', 'english error messag
 ```
 
 
-And now, it's all done!
+现在，你抛出的所有code为e001的报错都将被翻译成指定的语言，修改DemoController自己试一试吧！
 
 
-Change Demo Controller and take a look!
 ```
 
 @Controller
@@ -268,10 +278,12 @@ public class DemoController {
 
 
 
-## Create i18n translation items
-We provide an neat api to help you to maintain i18n translate items.
 
-Here's a sample code
+## 如何创建i18n翻译项
+我们提供了一个简单的api，帮助你维护i18n翻译项，你可以通过这个api轻松地将你的项目与Whisper集成起来。
+
+
+这里是一段样例代码：
 ```
         @Inject
 	I18nTranslateService i18nTranslateService;
@@ -283,6 +295,7 @@ Here's a sample code
 	}
 ``` 
 
-**Important Note**
+**注意**
 
-We use i18nKey,i18nCode,language as an union unique key in table i18n_items.
+我们使用i18nKey,i18nCode,language，作为联合唯一索引。所以请保证所有的被指定为i18n id的属性值全局唯一(@I18nMapping(i18nCode = "id"))。
+最佳实践是使用UUID作为i18n id，你可能需要为需要翻译的表添加一列i18n_id，并用随机的UUID填充。
