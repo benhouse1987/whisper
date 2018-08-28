@@ -1,5 +1,5 @@
 # Whisper
-Whisper is an I18n translate framework to add i18n support for your service.
+[Wisper](https://github.com/benhouse1987/whisper) is an I18n translate framework to add i18n support for your service.
 
 It's really fast and easy to use.
 

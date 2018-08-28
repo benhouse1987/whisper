@@ -1,5 +1,5 @@
 # Whisper
-Whisper是一个轻量级I18n翻译框架，简单易用，性能出色，并且扩展简单。
+[Wisper](https://github.com/benhouse1987/whisper)是一个轻量级I18n翻译框架，简单易用，性能出色，并且扩展简单。
 
 
 **让我们看看如何开始使用Whisper!**
