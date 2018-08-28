@@ -7,6 +7,10 @@ Whisper是一个轻量级I18n翻译框架，简单易用，性能出色，并且
 假设你有一个基于Spring的项目，并且项目的dataSource已经配置好。
 
 
+**可以在下面链接得到Whisper的样例代码**
+ 
+ [Whisper Demo](https://github.com/benhouse1987/whisper-demo)
+ 
 ## 准备工作
 ### 创建I18n翻译表
 在你的服务基于的数据库中，创建一张i18n表，用来存储翻译关系。
